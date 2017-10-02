@@ -1,0 +1,135 @@
+Description: ignores rdf:resource in XMP
+Origin: vendor, http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=10;filename=xml-rdf-resource.patch;att=1;bug=605941
+Bug-Debian: http://bugs.debian.org/605941
+Author: brian m. carlson <sandals@crustytoothpaste.net>
+
+Index: xmlgraphics-commons-1.4.dfsg/src/java/org/apache/xmlgraphics/xmp/XMPArray.java
+===================================================================
+--- xmlgraphics-commons-1.4.dfsg.orig/src/java/org/apache/xmlgraphics/xmp/XMPArray.java	2010-12-20 21:38:39.387336352 +0100
++++ xmlgraphics-commons-1.4.dfsg/src/java/org/apache/xmlgraphics/xmp/XMPArray.java	2010-12-20 21:39:14.891670733 +0100
+@@ -19,6 +19,8 @@
+ 
+ package org.apache.xmlgraphics.xmp;
+ 
++import java.net.URI;
++
+ import java.util.List;
+ 
+ import org.xml.sax.ContentHandler;
+@@ -216,15 +218,19 @@
+         for (int i = 0, c = values.size(); i < c; i++) {
+             String lang = (String)xmllang.get(i);
+             atts.clear();
++            Object v = values.get(i);
+             if (lang != null) {
+                 atts.addAttribute(XMPConstants.XML_NS, "lang", "xml:lang", "CDATA", lang);
+             }
++            if (v instanceof URI) {
++                atts.addAttribute(XMPConstants.RDF_NAMESPACE, "resource",
++                        "rdf:resource", "CDATA", ((URI)v).toString());
++            }
+             handler.startElement(XMPConstants.RDF_NAMESPACE,
+                     "li", "rdf:li", atts);
+-            Object v = values.get(i);
+             if (v instanceof XMPComplexValue) {
+                 ((XMPComplexValue)v).toSAX(handler);
+-            } else {
++            } else if (!(v instanceof URI)) {
+                 String value = (String)values.get(i);
+                 char[] chars = value.toCharArray();
+                 handler.characters(chars, 0, chars.length);
+Index: xmlgraphics-commons-1.4.dfsg/src/java/org/apache/xmlgraphics/xmp/XMPHandler.java
+===================================================================
+--- xmlgraphics-commons-1.4.dfsg.orig/src/java/org/apache/xmlgraphics/xmp/XMPHandler.java	2010-12-20 21:39:04.295336685 +0100
++++ xmlgraphics-commons-1.4.dfsg/src/java/org/apache/xmlgraphics/xmp/XMPHandler.java	2010-12-20 21:39:14.891670733 +0100
+@@ -19,6 +19,9 @@
+ 
+ package org.apache.xmlgraphics.xmp;
+ 
++import java.net.URI;
++import java.net.URISyntaxException;
++
+ import java.util.Stack;
+ 
+ import org.xml.sax.Attributes;
+@@ -233,6 +236,15 @@
+                         } else {
+                             getCurrentArray(true).add(s);
+                         }
++                    } else {
++                        String res = atts.getValue(XMPConstants.RDF_NAMESPACE,
++                                "resource");
++                        try {
++                            URI resource = new URI(res);
++                            getCurrentArray(true).add(resource);
++                        } catch (URISyntaxException e) {
++                            throw new SAXException("rdf:resource value is not a well-formed URI", e);
++                        }
+                     }
+                 }
+             } else if ("Description".equals(localName)) {
+@@ -267,9 +279,18 @@
+                 String s = content.toString().trim();
+                 prop = new XMPProperty(name, s);
+                 String lang = atts.getValue(XMPConstants.XML_NS, "lang");
++                String res = atts.getValue(XMPConstants.RDF_NAMESPACE, "resource");
+                 if (lang != null) {
+                     prop.setXMLLang(lang);
+                 }
++                if (res != null) {
++                    try {
++                        URI resource = new URI(res);
++                        prop.setValue(resource);
++                    } catch (URISyntaxException e) {
++                        throw new SAXException("rdf:resource value is not a well-formed URI", e);
++                    }
++                }
+             }
+             if (prop.getName() == null) {
+                 throw new IllegalStateException("No content in XMP property");
+Index: xmlgraphics-commons-1.4.dfsg/src/java/org/apache/xmlgraphics/xmp/XMPProperty.java
+===================================================================
+--- xmlgraphics-commons-1.4.dfsg.orig/src/java/org/apache/xmlgraphics/xmp/XMPProperty.java	2010-12-20 21:38:39.403336472 +0100
++++ xmlgraphics-commons-1.4.dfsg/src/java/org/apache/xmlgraphics/xmp/XMPProperty.java	2010-12-20 21:39:14.891670733 +0100
+@@ -19,6 +19,8 @@
+ 
+ package org.apache.xmlgraphics.xmp;
+ 
++import java.net.URI;
++
+ import java.util.Iterator;
+ import java.util.Map;
+ 
+@@ -38,6 +40,7 @@
+     private Object value;
+     private String xmllang;
+     private Map qualifiers;
++    private boolean uri;
+ 
+     /**
+      * Creates a new XMP property.
+@@ -47,6 +50,7 @@
+     public XMPProperty(QName name, Object value) {
+         this.name = name;
+         this.value = value;
++        this.uri = false;
+     }
+ 
+     /** @return the qualified name of the property (namespace URI + local name) */
+@@ -192,12 +196,15 @@
+     public void toSAX(ContentHandler handler) throws SAXException {
+         AttributesImpl atts = new AttributesImpl();
+         String qName = getEffectiveQName();
++        if (value instanceof URI) {
++            atts.addAttribute(XMPConstants.RDF_NAMESPACE, "resource", "rdf:resource", "CDATA", ((URI)value).toString());
++        }
+         handler.startElement(getName().getNamespaceURI(),
+                 getName().getLocalName(), qName, atts);
+         if (value instanceof XMPComplexValue) {
+             XMPComplexValue cv = ((XMPComplexValue)value);
+             cv.toSAX(handler);
+-        } else {
++        } else if (!(value instanceof URI)) {
+             char[] chars = value.toString().toCharArray();
+             handler.characters(chars, 0, chars.length);
+         }

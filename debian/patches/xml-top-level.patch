@@ -1,0 +1,22 @@
+Description: handles top-level elements in XMP poorly
+Origin: vendor, http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=10;filename=xml-top-level.patch;att=1;bug=605940
+Bug-Debian: http://bugs.debian.org/605940
+Author: brian m. carlson <sandals@crustytoothpaste.net>
+
+Index: xmlgraphics-commons-1.4.dfsg/src/java/org/apache/xmlgraphics/xmp/XMPHandler.java
+===================================================================
+--- xmlgraphics-commons-1.5.orig/src/java/org/apache/xmlgraphics/xmp/XMPHandler.java	2012-10-16 19:54:12.000000000 +0000
++++ xmlgraphics-commons-1.5/src/java/org/apache/xmlgraphics/xmp/XMPHandler.java	2012-10-29 08:07:29.898012902 +0000
+@@ -187,6 +187,12 @@
+                 throw new SAXException("Unexpected element in the RDF namespace: " + localName);
+             }
+         } else {
++            String about = attributes.getValue(XMPConstants.RDF_NAMESPACE, "about");
++            if (this.contextStack.peek().equals(this.meta) && (about != null)) {
++                //rdf:RDF is the parent, so this is a top-level item that isn't
++                //an rdf:Description, which isn't allowed.
++                throw new SAXException("Top-level element " + qName + " not an rdf:Description");
++            }
+             if (getCurrentPropName() != null) {
+                 //Structure (shorthand form)
+                 startStructure();

@@ -1,0 +1,5 @@
+Description: This test fails with openjdk-7 (and oracle java 7).
+ Skip for the time being until upstream resolve - see Bug.
+Author: James Page <james.page@ubuntu.com>
+Bug: https://issues.apache.org/bugzilla/show_bug.cgi?id=53328
+

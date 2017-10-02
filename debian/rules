@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+
+export JAVA_HOME=/usr/lib/jvm/default-java
+
+# unexport DISPLAY for so cowbuilder builds don't fail
+unexport DISPLAY
+
+%:
+	dh $@ --buildsystem=maven
+
+get-orig-source:
+	uscan --force-download --verbose --repack --rename
