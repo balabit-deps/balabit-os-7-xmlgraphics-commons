@@ -2,10 +2,15 @@ xmlgraphics-commons (2.3-1) unstable; urgency=medium
 
   * Team upload.
   * New upstream version 2.3.
+    - Apparently all tests run successfully again. (Closes: #906523)
   * Switch to compat level 11.
   * Declare compliance with Debian Policy 4.2.0.
+  * Remove README.source. Obsolete.
+  * Remove Vincent Fourmond from Uploaders at this own request.
+    (Closes: #897314)
+  * Remove all patches because they were disabled and not used at all.
 
- -- Markus Koschany <apo@debian.org>  Wed, 22 Aug 2018 23:21:29 +0200
+ -- Markus Koschany <apo@debian.org>  Wed, 22 Aug 2018 23:30:39 +0200
 
 xmlgraphics-commons (2.2-1) unstable; urgency=medium
 
