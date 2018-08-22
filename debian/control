@@ -17,7 +17,7 @@ Build-Depends:
  libmockito-java,
  libxml-commons-resolver1.1-java,
  maven-debian-helper (>= 2.2)
-Standards-Version: 4.1.1
+Standards-Version: 4.2.0
 Vcs-Git: https://anonscm.debian.org/git/pkg-java/xmlgraphics-commons.git
 Vcs-Browser: https://anonscm.debian.org/cgit/pkg-java/xmlgraphics-commons.git
 Homepage: http://xmlgraphics.apache.org/commons/
