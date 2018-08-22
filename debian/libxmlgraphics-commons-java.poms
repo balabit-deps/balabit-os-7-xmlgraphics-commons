@@ -1,1 +1,1 @@
-pom.xml --has-package-version --java-lib
+pom.xml --java-lib
