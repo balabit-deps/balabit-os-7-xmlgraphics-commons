@@ -183,11 +183,11 @@ xmlgraphics-commons (1.3.1.dfsg-1) experimental; urgency=low
   * debian/rules now uses DEB_UPSTREAM_VERSION
 
   [ Vincent Fourmond ]
-  * Created a debian/new-upstream script to repackage upstream 
+  * Created a debian/new-upstream script to repackage upstream
     tarball
   * Updated debian/watch
   * Adding libcommons-logging as Build-Dep and in debian/rules
-  * Updated debian/README.Debian-source to reflect the 
+  * Updated debian/README.Debian-source to reflect the
     debian/new-upstream script.
 
  -- Vincent Fourmond <fourmond@debian.org>  Mon, 13 Oct 2008 22:17:22 +0200
@@ -199,7 +199,7 @@ xmlgraphics-commons (1.2.dfsg+dak-1) experimental; urgency=low
 
   [ Vincent Fourmond ]
   * Added myself to Uploaders
-  * Fixed debian/rules and debian/control to build with openjdk 
+  * Fixed debian/rules and debian/control to build with openjdk
     (closes: #452875)
   * Already conforms to Standards 3.8.0
   * Moving to main, hence the pseudo-new-upstream tarball to work
