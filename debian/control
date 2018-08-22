@@ -6,7 +6,7 @@ Uploaders:
  Vincent Fourmond <fourmond@debian.org>,
  Mathieu Malaterre <malat@debian.org>
 Build-Depends:
- debhelper (>= 10),
+ debhelper (>= 11),
  default-jdk,
  default-jdk-doc,
  gnupg,
