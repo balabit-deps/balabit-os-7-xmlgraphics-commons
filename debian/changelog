@@ -1,3 +1,9 @@
+xmlgraphics-commons (2.3-1ubuntu1bb1) balabit-os-7.0; urgency=medium
+
+  * Disabled maven tests
+
+ -- Balazs Benedek <balazs.benedek@balabit.com>  Sat, 10 Nov 2018 11:56:15 +0100
+
 xmlgraphics-commons (2.3-1) unstable; urgency=medium
 
   * Team upload.
